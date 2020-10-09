@@ -10,14 +10,15 @@
 </head>
 
 <body>
-    <div class="jumbotron py-2" style="background-color: #20315A ; color: white;">
+    <div class="jumbotron py-4"
+        style="background-image:url('https://i.pinimg.com/originals/3d/1c/e3/3d1ce3fb1985505ba88e01e525a8f841.gif') ; color: rgb(25, 25, 32);">
         <h1 class="text-center">
             <strong>Weather Dashboard</strong>
         </h1>
     </div>
     <div class="container-fluid px-5">
         <div class="row">
-            <div class="col-4 bg-light">
+            <div class="col-3 bg-light">
                 <div class="row">
                     <h3>Search for a city:</h3>
                     <form class="form-inline">
@@ -36,7 +37,7 @@
                     </div>
                 </div>
             </div>
-            <div class=" col-7 ml-3">
+            <div class=" col-8 ml-1">
                 <div class="row">
                     <div class="card w-100">
                         <div class="card-body">
@@ -46,7 +47,10 @@
                             <p class="temp"></p>
                             <p class="humid"></p>
                             <p class="wind"></p>
-                            <p class="uv"></p>
+                            <div>
+                                <label id="uv-label" for="uv-index"></label>
+                                <button class="btn btn-sm ml-2" id="uvi"></button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -55,40 +59,45 @@
                 </div>
                 <div class="row">
                     <div class="card-deck text-white">
-                        <div class="card bg-primary mr-2">
-                            <div class="card-body ">
-                                <h5 class="card-title">10/7/2020</h5>
-                                <p>Temp:</p>
-                                <p>Humidity:</p>
+                        <div class="card col-2 bg-primary">
+                            <div class="card-body p-0 ">
+                                <h5 class="1st-day"></h5>
+                                <img id="icon1">
+                                <p id="temp1"></p>
+                                <p id="humidity1"></p>
                             </div>
                         </div>
-                        <div class="card bg-primary mr-2 ">
+                        <div class="card col-2 bg-primary ">
 
-                            <div class="card-body">
-                                <h5 class="card-title">10/7/2020</h5>
-                                <p>Temp:</p>
-                                <p>Humidity:</p>
+                            <div class="card-body p-0">
+                                <h5 class="2nd-day"></h5>
+                                <img id="icon2">
+                                <p id="temp2"></p>
+                                <p id="humidity2"></p>
                             </div>
                         </div>
-                        <div class="card bg-primary mr-2">
-                            <div class="card-body ">
-                                <h5 class="card-title">10/7/2020</h5>
-                                <p>Temp:</p>
-                                <p>Humidity:</p>
+                        <div class="card col-2 bg-primary ">
+                            <div class="card-body p-0">
+                                <h5 class="3rd-day"></h5>
+                                <img id="icon3">
+                                <p id="temp3"></p>
+                                <p id="humidity3"></p>
                             </div>
                         </div>
-                        <div class="card bg-primary mr-2">
-                            <div class="card-body">
-                                <h5 class="card-title">10/7/2020</h5>
-                                <p>Temp:</p>
-                                <p>Humidity:</p>
+                        <div class="card col-2 bg-primary">
+                            <div class="card-body p-0">
+                                <h5 class="4th-day"></h5>
+                                <img id="icon4">
+                                <p id="temp4"></p>
+                                <p id="humidity4"></p>
                             </div>
                         </div>
-                        <div class="card bg-primary mr-2">
-                            <div class="card-body">
-                                <h5 class="card-title">10/7/2020</h5>
-                                <p>Temp:</p>
-                                <p>Humidity:</p>
+                        <div class="card col-2 bg-primary">
+                            <div class="card-body p-0">
+                                <h5 class="5th-day"></h5>
+                                <img id="icon5">
+                                <p id="temp5"></p>
+                                <p id="humidity5"></p>
                             </div>
                         </div>
                     </div>
