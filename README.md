@@ -1,5 +1,5 @@
 # Weather-Dashboard
-  * A simple daily planner application that allows the user to save relevant events for each standard business hour of the day to manage time effectively.
+  * A simple Weather-dashboard application that allows the user to see the weather outlook for multiple cities.
 
 Explore the [project-page](https://github.com/Mgithub89/Weather-Dashboard.git)
 
@@ -13,18 +13,19 @@ View the [deployed-app](https://mgithub89.github.io/Weather-Dashboard/)
 
  ## About The Project 
   
-  <!-- The objective of this project is to create a simple daily planner application that allows a user to save events for each standard business hour of the day based on a user acceptance criteria.
-  This app displays current day at the top of the callendar by using **Moment.js** and allows a user to create a schedule for each colored time block that indicates whether it is in the past(grey colored), present(red colored) or future(green colored) based on time of the day. The user can also edit the event and save each hours schedule in local storage by clicking the save button. -->
+   The objective of this project is to create a weather dashboard application that allows a user to see current weather and five day forcast for any searched cities by using third party API based on a user acceptance criteria.
+  This app uses the **OpenWeather API** to retrive current weather data and five day forcast data for cities.
+  When a users enter a city name and click the search icon the user presented with current weather that shows Temprature, Humidity,Wind speed and UV-Index and  a 5-day forecast that displays the date, an icon representation of weather conditions .
 
 ## Mock-Up
 ![Ui](Assets/weather-app.PNG)
 
 ## Built With 
    *  HTML
-   *  CSS
    *  Bootstrap - CSS Framework
    *  Jquery - JavaScript Library
    *  Moment.js - JavaScript Library
+   *  OpenWeather Api
     
 
 ## Contact
