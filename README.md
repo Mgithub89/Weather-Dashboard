@@ -15,7 +15,7 @@ View the [deployed-app](https://mgithub89.github.io/Weather-Dashboard/)
   
    The objective of this project is to create a weather dashboard application that allows a user to see current weather and five day forcast for any searched cities by using third party API based on a user acceptance criteria.
   This app uses the **OpenWeather API** to retrive current weather data and five day forcast data for cities.
-  When a users enter a city name and click the search icon the user presented with current weather that shows Temprature, Humidity,Wind speed and UV-Index and  a 5-day forecast that displays the date, an icon representation of weather conditions .
+  When a users enter a city name and click the search icon the user presented with current weather that shows Temprature, Humidity,Wind speed and UV-Index and  a 5-day forecast that displays the date, an icon representation of weather conditions with Temperature and Humidity.
 
 ## Mock-Up
 ![Ui](Assets/weather-app.PNG)

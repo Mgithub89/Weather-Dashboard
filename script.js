@@ -7,12 +7,12 @@ let createdArr = JSON.parse(localStorage.getItem("city")) || "null";
 let lastCity;
 let cityClicked = false;
 
-let appid = "492de008a881601e8295898b5b2a2a1d";
+let appid = "766ebec85b2d50f13da7845409212cf2";
 
 function createQueryURL() {
     var queryURL = "https://api.openweathermap.org/data/2.5/weather?";
 
-    var queryParams = { "appid": "492de008a881601e8295898b5b2a2a1d" };
+    var queryParams = { "appid": "766ebec85b2d50f13da7845409212cf2" };
     queryParams.q = createdArr[cityArr.length - 1];
     return queryURL + $.param(queryParams);
 };
@@ -20,14 +20,14 @@ function createQueryURL() {
 function forecastQueryURL() {
     var queryURL = "https://api.openweathermap.org/data/2.5/forecast?";
 
-    var queryParams = { "appid": "492de008a881601e8295898b5b2a2a1d" };
+    var queryParams = { "appid": "766ebec85b2d50f13da7845409212cf2" };
     queryParams.q = createdArr[cityArr.length - 1];
     return queryURL + $.param(queryParams);
 };
 
 function builduviUrl() {
     let url = "https://api.openweathermap.org/data/2.5/uvi?";
-    var queryParams = { "appid": "492de008a881601e8295898b5b2a2a1d" };
+    var queryParams = { "appid": "766ebec85b2d50f13da7845409212cf2" };
     queryParams.lat = lat;
     queryParams.lon = lon;
 
