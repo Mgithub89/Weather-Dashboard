@@ -92,7 +92,7 @@ function forecast(response) {
         //accesing the weather conditon icon with src url
         let icon = forecast.weather[0].icon;
         let link = `http://openweathermap.org/img/wn/${icon}.png`;
-        console.log(response);
+        // console.log(response);
         //creating html elements for 5 day forecast and giving value
         var cardCol = $("<div class='card col-2 bg-primary'>");
         var cardContent = $("<div class='card-body p-0 '>");
@@ -150,7 +150,13 @@ function updatePage(response) {
 
 //function to make ajax call by taking last city of the array when the page is refreshed
 function renderCity() {
+
     var lastCity = createdArr[createdArr.length - 1];
+    //incase if a user type city name in search box and it exist in the localstorage list replace lastcity with enterd city value
+    if (city !== undefined) {
+        lastCity = city
+    }
+
     let url = `https://api.openweathermap.org/data/2.5/weather?appid=${appid}&q=${lastCity}`;
     let forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?appid=${appid}&q=${lastCity}`;
     $.ajax({
@@ -171,8 +177,8 @@ if (createdArr !== "null") {
 $("#button1").on("click", function (event) {
     event.preventDefault();
     $(".card-deck").empty();
-
-    city = $("#city").val().trim();
+    // converting city name to uppercase
+    city = $("#city").val().trim().toUpperCase();
     if (city === "") {
         alert("pls enter city name ");
         return;
@@ -180,15 +186,24 @@ $("#button1").on("click", function (event) {
     cityArr = JSON.parse(localStorage.getItem("city"));
     if (!cityArr) {
         cityArr = [];
-        cityArr.push(city);
-        localStorage.setItem("city", JSON.stringify(cityArr));
+        //adding uniqe value and not addind diplicate value 
+        if (cityArr.indexOf(city) === -1) {
+            cityArr.push(city);
+            localStorage.setItem("city", JSON.stringify(cityArr));
+        }
+
     } else {
-        cityArr.push(city);
-        localStorage.setItem("city", JSON.stringify(cityArr));
+        console.log(city);
+        console.log(cityArr);
+        if (cityArr.indexOf(city) === -1) {
+            cityArr.push(city);
+            localStorage.setItem("city", JSON.stringify(cityArr));
+        }
     }
     createdArr = JSON.parse(localStorage.getItem("city")) || "null"
-
+    console.log(createdArr);
     renderCity();
+
 });
 
 // click listener on the city buttons
