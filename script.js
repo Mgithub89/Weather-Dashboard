@@ -4,93 +4,120 @@ var uvIndex;
 var city;
 let cityArr;
 let createdArr = JSON.parse(localStorage.getItem("city")) || "null";
-let lastCity;
-let cityClicked = false;
-
 let appid = "766ebec85b2d50f13da7845409212cf2";
 
-function createQueryURL() {
-    var queryURL = "https://api.openweathermap.org/data/2.5/weather?";
+//current Weather request url
+// function createQueryURL() {
+//     var queryURL = "https://api.openweathermap.org/data/2.5/weather?";
+//     var queryParams = { "appid": "766ebec85b2d50f13da7845409212cf2" };
+//     queryParams.q = createdArr[cityArr.length - 1];
+//     return queryURL + $.param(queryParams);
+// };
 
-    var queryParams = { "appid": "766ebec85b2d50f13da7845409212cf2" };
-    queryParams.q = createdArr[cityArr.length - 1];
-    return queryURL + $.param(queryParams);
-};
+//forecast request url
+// function forecastQueryURL() {
+//     var queryURL = "https://api.openweathermap.org/data/2.5/forecast?";
+//     var queryParams = { "appid": "766ebec85b2d50f13da7845409212cf2" };
+//     queryParams.q = createdArr[cityArr.length - 1];
+//     return queryURL + $.param(queryParams);
+// };
 
-function forecastQueryURL() {
-    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?";
-
-    var queryParams = { "appid": "766ebec85b2d50f13da7845409212cf2" };
-    queryParams.q = createdArr[cityArr.length - 1];
-    return queryURL + $.param(queryParams);
-};
-
-function builduviUrl() {
-    let url = "https://api.openweathermap.org/data/2.5/uvi?";
-    var queryParams = { "appid": "766ebec85b2d50f13da7845409212cf2" };
-    queryParams.lat = lat;
-    queryParams.lon = lon;
-
-    return url + $.param(queryParams);
-};
+//UVI request url
+// function builduviUrl() {
+//     let url = "https://api.openweathermap.org/data/2.5/uvi?";
+//     var queryParams = { "appid": "766ebec85b2d50f13da7845409212cf2" };
+//     queryParams.lat = lat;
+//     queryParams.lon = lon;
+//     return url + $.param(queryParams);
+// };
 
 function currentLocationUpdate(response) {
-
     let icon = response.weather[0].icon;
     let link = `http://openweathermap.org/img/wn/${icon}@2x.png`;
     $(".list-group-flush").empty();
 
+    //loop through createdArr and create buttonElm , addclass list-group-item
     for (var i = 0; i < createdArr.length; i++) {
         var buttonEl = $("<button>");
         buttonEl.addClass("list-group-item");
+        // updating the buttonElm textcontent and prepend it to ul with class list-group-flush
         buttonEl.text(createdArr[i]);
         $(".list-group-flush").prepend(buttonEl);
     }
-
+    //remove d-none class from the div(#card1)
     $("#card1").removeClass("d-none");
+
+    //update the DOM with the response value     
     $("#city-name").html(`${response.name} (${moment().format('L')}) <img src= ${link}>`);
     $(".temp").html("Temperature: " + toFahrenhite(parseFloat(response.main.temp)).toFixed(2) + "&deg;F");
     $(".humid").text(`Humidity: ${response.main.humidity}%`);
     $(".wind").text("Wind Speed: " + response.wind.speed + "MPH");
 
+    //longtuid and latitude from the response 
     lon = response.coord.lon;
     lat = response.coord.lat;
 
-    var uviUrl = builduviUrl();
-
+    //uvi request url
+    // var uviUrl = builduviUrl();
+    let UVQueryURL = `https://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&appid=${appid}`;
+    //ajax call for uvi
     $.ajax({
-        url: uviUrl,
+        // url: uviUrl,
+        url: UVQueryURL,
         method: "GET"
     }).then(function (uvdata) {
         uvIndex = uvdata.value;
-
+        //give bg-color based on the returned uvindex value 
         if (uvIndex > 8) {
-            $("#uvi").addClass("btn-danger");
-            $("#uvi").removeClass("btn-warning");
-            $("#uvi").removeClass("btn-success");
+            $("#uvi").css("background-color", "red");
         }
         else if (uvIndex < 8 && uvIndex > 3) {
-            $("#uvi").addClass("btn-warning");
-            $("#uvi").removeClass("btn-danger");
-            $("#uvi").removeClass("btn-success");
+            $("#uvi").css("background-color", "yellow");
         }
         else {
-            $("#uvi").addClass("btn-success");
-            $("#uvi").removeClass("btn-danger");
-            $("#uvi").removeClass("btn-warning");
-
+            $("#uvi").css("background-color", "green");
         }
         $("#uv-label").text(`UV-Index: `)
         $("#uvi").text(`${uvIndex}`)
-
     });
+};
+
+//function to create 5 day forecast html element 
+function forecast(response) {
+    var forc = response.list
+    var i = 5
+    while (i < forc.length) {
+        var forecast = forc[i];
+        i += 8;
+        //accesing the weather conditon icon with src url
+        let icon = forecast.weather[0].icon;
+        let link = `http://openweathermap.org/img/wn/${icon}.png`;
+        console.log(response);
+        //creating html elements for 5 day forecast and giving value
+        var cardCol = $("<div class='card col-2 bg-primary'>");
+        var cardContent = $("<div class='card-body p-0 '>");
+        var h5El = $("<h5>").text(moment(forecast.dt_txt).format('L'));
+        var imgEl = $("<img>").attr("src", link);
+        var p1El = $("<p>").html("Temp: " + toFahrenhite(parseFloat(forecast.main.temp)).toFixed(2) + "&deg;F");
+        var p2El = $("<p>").text(`Humidity: ${forecast.main.humidity}%`);
+
+        //append all the element in to the div with class-card-body
+        cardContent.append(h5El);
+        cardContent.append(imgEl);
+        cardContent.append(p1El);
+        cardContent.append(p2El);
+        cardCol.append(cardContent);
+        $(".card-deck").append(cardCol);
+    };
+
+    $("#forecast-title").removeClass("d-none");
 };
 
 function updatePage(response) {
-
     let icon = response.weather[0].icon;
     var link = `http://openweathermap.org/img/wn/${icon}@2x.png`;
 
+    // /update the DOM with the response value 
     $("#card1").removeClass("d-none");
     $("#city-name").html(`${response.name} (${moment().format('L')}) <img src= ${link}>`);
     $(".temp").html("Temperature: " + toFahrenhite(parseFloat(response.main.temp)).toFixed(2) + "&deg;F");
@@ -100,39 +127,30 @@ function updatePage(response) {
     lon = response.coord.lon;
     lat = response.coord.lat;
 
-    var uviUrl = builduviUrl();
-
+    // var uviUrl = builduviUrl();
+    let UVQueryURL = `https://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&appid=${appid}`;
     $.ajax({
-        url: uviUrl,
+        url: UVQueryURL,
         method: "GET"
     }).then(function (uvdata) {
         uvIndex = uvdata.value;
         if (uvIndex > 8) {
-            $("#uvi").addClass("btn-danger");
-            $("#uvi").removeClass("btn-warning");
-            $("#uvi").removeClass("btn-success");
+            $("#uvi").css("background-color", "red");
         }
         else if (uvIndex < 8 && uvIndex > 3) {
-            $("#uvi").addClass("btn-warning");
-            $("#uvi").removeClass("btn-danger");
-            $("#uvi").removeClass("btn-success");
+            $("#uvi").css("background-color", "yellow");
         }
         else {
-            $("#uvi").addClass("btn-success");
-            $("#uvi").removeClass("btn-danger");
-            $("#uvi").removeClass("btn-warning");
-
+            $("#uvi").css("background-color", "green");
         }
         $("#uv-label").text(`UV-Index: `)
         $("#uvi").text(`${uvIndex}`)
-
     });
 };
 
+//function to make ajax call by taking last city of the array when the page is refreshed
 function renderCity() {
-
-    lastCity = createdArr[createdArr.length - 1];
-
+    var lastCity = createdArr[createdArr.length - 1];
     let url = `https://api.openweathermap.org/data/2.5/weather?appid=${appid}&q=${lastCity}`;
     let forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?appid=${appid}&q=${lastCity}`;
     $.ajax({
@@ -145,61 +163,20 @@ function renderCity() {
         method: "GET"
     }).then(forecast)
 };
-// function refreshCity() {
 
-//     refCity = $("#city-name").text();
-
-//     let url = `https://api.openweathermap.org/data/2.5/weather?appid=${appid}&q=${refCity}`;
-//     let forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?appid=${appid}&q=${refCity}`;
-//     $.ajax({
-//         url: url,
-//         method: "GET"
-//     }).then(currentLocationUpdate)
-
-//     $.ajax({
-//         url: forecastUrl,
-//         method: "GET"
-//     }).then(forecast)
-// };
-
-// if (createdArr !== "null") {
-//     refreshCity();
-// };
-
-function forecast(response) {
-
-    var forc = response.list
-    var i = 5
-    while (i < forc.length) {
-        var forecast = forc[i];
-        i += 8;
-
-        let icon = forecast.weather[0].icon;
-        let link = `http://openweathermap.org/img/wn/${icon}.png`;
-
-        var cardCol = $("<div class='card col-2 bg-primary'>");
-        var cardBody = $("<div class='card-body p-0 '>");
-        var h5El = $("<h5>").text(moment(forecast.dt_txt).format('L'));
-        var imgEl = $("<img>").attr("src", link);
-        var p1El = $("<p>").html("Temp: " + toFahrenhite(parseFloat(forecast.main.temp)).toFixed(2) + "&deg;F");
-        var p2El = $("<p>").text(`Humidity: ${forecast.main.humidity}%`);
-
-        cardBody.append(h5El);
-        cardBody.append(imgEl);
-        cardBody.append(p1El);
-        cardBody.append(p2El);
-        cardCol.append(cardBody);
-        $(".card-deck").append(cardCol);
-    };
-
-    $("#forecast-title").removeClass("d-none");
-};
-
+if (createdArr !== "null") {
+    renderCity()
+}
+//click listener on search button
 $("#button1").on("click", function (event) {
     event.preventDefault();
     $(".card-deck").empty();
 
     city = $("#city").val().trim();
+    if (city === "") {
+        alert("pls enter city name ");
+        return;
+    }
     cityArr = JSON.parse(localStorage.getItem("city"));
     if (!cityArr) {
         cityArr = [];
@@ -210,19 +187,19 @@ $("#button1").on("click", function (event) {
         localStorage.setItem("city", JSON.stringify(cityArr));
     }
     createdArr = JSON.parse(localStorage.getItem("city")) || "null"
-    // lastCity = createdArr[cityArr.length - 1];
+
     renderCity();
 });
 
+// click listener on the city buttons
 $(document).on("click", ".list-group-item", function (event) {
     event.preventDefault();
-    // lastCity = $(this).text();
     let city = $(this).text();
     $(".card-deck").empty();
-    cityClicked = true;
     var url = `https://api.openweathermap.org/data/2.5/weather?appid=${appid}&q=${city}`;
     var forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?appid=${appid}&q=${city}`;
 
+    // ajax call for clicked city
     $.ajax({
         url: url,
         method: "GET"
@@ -235,128 +212,12 @@ $(document).on("click", ".list-group-item", function (event) {
 
 });
 
+// function to change Temp Fahrenhite
 function toFahrenhite(K) {
     return ((K - 273.15) * 1.80 + 32)
 
 }
 // ======================
-
-// console.log(uvIndex);
-        // let cityObj = {
-        //     name: cityName,
-        //     icon: iconC,
-        //     Temp: response.main.temp,
-        //     Humid: response.main.humidity,
-        //     windSpeed: response.wind.speed,
-        //     uvIndex: uvIndex
-        // };
-
-        // cityArr = JSON.parse(localStorage.getItem("city"));
-        // if (!cityArr) {
-        //     cityArr = [];
-        //     cityArr.push({
-        //         name: cityName,
-        //         icon: iconC,
-        //         Temp: response.main.temp,
-        //         Humid: response.main.humidity,
-        //         windSpeed: response.wind.speed,
-        //         uvIndex: uvIndex
-        //     });
-        //     localStorage.setItem("city", JSON.stringify(cityArr));
-        // } else {
-        //     cityArr.push(cityObj);
-        //     localStorage.setItem("city", JSON.stringify(cityArr));
-        // }
-// let cityObj = {
-//     name: city,
-//     icon: icon,
-//     Temp: response.main.temp,
-//     Humid: response.main.humidity,
-//     windSpeed: response.wind.speed,
-//     uvIndex: uvIndex
-// };
-// var url = createQueryURL();
-// var forcastUrl = forecastQueryURL();
-// $.ajax({
-//     url: url,
-//     method: "GET"
-// }).then(currentLocationUpdate)
-
-// $.ajax({
-//     url: forcastUrl,
-//     method: "GET"
-// }).then(forecast)
-// var cityArr = JSON.parse(localStorage.getItem("city"));
-// let myCity = cityArr[cityArr.length - 1];
-// var iconC = myCity.icon;
-// var link = `http://openweathermap.org/img/wn/${iconC}@2x.png`
-// var buttonEl = $("<button>");
-// buttonEl.addClass("list-group-item");
-// buttonEl.text(myCity.name);
-// $(".list-group-flush").prepend(buttonEl);
-// $("#card1").removeClass("d-none");
-
-// $("#city-name").html(`${myCity.name} (${moment().format('L')}) <img src= ${link}>`);
-// $(".temp").html(`Temperature: ${toFahrenhite(parseFloat(myCity.Temp)).toFixed(2)}&deg;F`);
-// $(".humid").text(`Humidity: ${myCity.Humid}%`);
-// $(".wind").text(`Wind Speed: ${myCity.windSpeed}MPH`);
-
-//in forecast fun////
-
-// for (var i = 5; i < response.list.length; i + 8) {
-    //     var forc = response.list[i];
-    //     let icon = forc.weather[0].icon;
-    //     let link = `http://openweathermap.org/img/wn/${icon[i]}.png`;
-
-    //     console.log(forc);
-    //     console.log(icon);
-    //     console.log(link);
-    // }
-
-    // var forc1 = response.list[5];
-    // var forc2 = response.list[13];
-    // var forc3 = response.list[21];
-    // var forc4 = response.list[29];
-    // var forc5 = response.list[37];
-
-    // let icon1 = forc1.weather[0].icon;
-    // let icon2 = forc2.weather[0].icon;
-    // let icon3 = forc3.weather[0].icon;
-    // let icon4 = forc4.weather[0].icon;
-    // let icon5 = forc5.weather[0].icon;
-
-    // let link1 = `http://openweathermap.org/img/wn/${icon1}.png`
-    // let link2 = `http://openweathermap.org/img/wn/${icon2}.png`
-    // let link3 = `http://openweathermap.org/img/wn/${icon3}.png`
-    // let link4 = `http://openweathermap.org/img/wn/${icon4}.png`
-    // let link5 = `http://openweathermap.org/img/wn/${icon5}.png`
-
-    // console.log(forc1.dt_txt);
-
-    // $(".1st-day").text(moment(forc1.dt_txt).format('L'));
-    // $("#icon1").attr("src", link1);
-    // $("#temp1").html("Temp: " + toFahrenhite(parseFloat(forc1.main.temp)).toFixed(2) + "&deg;F");
-    // $("#humidity1").text(`Humidity: ${forc1.main.humidity}%`);
-
-    // $(".2nd-day").text(moment(forc2.dt_txt).format('L'));
-    // $("#icon2").attr("src", link2);
-    // $("#temp2").html("Temp: " + toFahrenhite(parseFloat(forc2.main.temp)).toFixed(2) + "&deg;F");
-    // $("#humidity2").text(`Humidity: ${forc2.main.humidity}%`);
-
-    // $(".3rd-day").text(moment(forc3.dt_txt).format('L'));
-    // $("#icon3").attr("src", link3);
-    // $("#temp3").html("Temp: " + toFahrenhite(parseFloat(forc3.main.temp)).toFixed(2) + "&deg;F");
-    // $("#humidity3").text(`Humidity: ${forc3.main.humidity}%`);
-
-    // $(".4th-day").text(moment(forc4.dt_txt).format('L'));
-    // $("#icon4").attr("src", link4);
-    // $("#temp4").html("Temp: " + toFahrenhite(parseFloat(forc4.main.temp)).toFixed(2) + "&deg;F");
-    // $("#humidity4").text(`Humidity: ${forc4.main.humidity}%`);
-
-    // $(".5th-day").text(moment(forc5.dt_txt).format('L'));
-    // $("#icon5").attr("src", link5);
-    // $("#temp5").html("Temp: " + toFahrenhite(parseFloat(forc5.main.temp)).toFixed(2) + "&deg;F");
-    // $("#humidity5").text(`Humidity: ${forc5.main.humidity}%`);
 
 
 
